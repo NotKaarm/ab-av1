@@ -200,7 +200,7 @@ impl VCodecSpecific for Arc<str> {
 
     fn crf_arg(&self) -> &str {
         // use crf-like args to support encoders that don't have crf
-        if &**self == "librav1e" || self.ends_with("_vaapi") {
+        if &**self == "librav1e" || self.ends_with("_vaapi") || &**self == "libvvenc" {
             "-qp"
         } else if self.ends_with("_nvenc") {
             "-cq"

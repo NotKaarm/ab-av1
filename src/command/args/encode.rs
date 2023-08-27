@@ -242,7 +242,7 @@ impl Encode {
         }
 
         let pix_fmt = self.pix_format.unwrap_or(match &*vcodec {
-            vc if vc.contains("av1") => PixelFormat::Yuv420p10le,
+            vc if vc.contains("av1") || vc.contains("vvenc") => PixelFormat::Yuv420p10le,
             _ => PixelFormat::Yuv420p,
         });
 
@@ -341,6 +341,8 @@ impl Encoder {
             "libx264" | "libx265" => 46.0,
             // rav1e: use max -qp
             "librav1e" => 255.0,
+			// Default for vvenc
+			"libvvenc" => 63.0,
             // Works well for svt-av1
             _ => 55.0,
         }
@@ -350,7 +352,7 @@ impl Encoder {
     fn default_ffmpeg_args(&self) -> &[(&'static str, &'static str)] {
         match self.as_str() {
             // add `-b:v 0` for aom & vp9 to use "constant quality" mode
-            "libaom-av1" | "libvpx-vp9" => &[("-b:v", "0")],
+            "libaom-av1" | "libvpx-vp9" | "libvvenc" => &[("-b:v", "0")],
             // enable lookahead mode for qsv encoders
             "av1_qsv" | "hevc_qsv" | "h264_qsv" => &[
                 ("-look_ahead", "1"),
